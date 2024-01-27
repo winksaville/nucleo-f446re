@@ -1,9 +1,9 @@
 use stm32f4xx_hal::{
     gpio::{gpioa::PA5, Input, Output},
     pac::TIM2,
-    prelude::*,
+//    prelude::*,
     rcc::Clocks,
-    timer::PwmChannel,
+//    timer::PwmChannel,
 };
 use switch_hal::{ActiveHigh, IntoSwitch, OutputSwitch, Switch, ToggleableOutputSwitch};
 use unwrap_infallible::UnwrapInfallible;
@@ -54,44 +54,45 @@ impl LedBuilder for LedDigital {
     }
 }
 
-/// An analog LED controller (brightness from 0 - 100%).
-#[allow(clippy::module_name_repetitions)]
-pub struct LedAnalog(PwmChannel<TIM2, 0>);
-
-impl LedAnalog {
-    /// Initialize the analog LED.
-    ///
-    /// PWM frequency is set to 20 kHz. In the future if it needs to be user-defined,
-    /// this could be done through a generic parameter on `LedAnalog`.
-    /// Since each pin can only be moved once, effectively this is a singleton.
-    #[must_use]
-    pub fn new(pin: PA5<Input>, tim: TIM2, clocks: &Clocks) -> Self {
-        let mut pwm_ch1 = tim.pwm_hz(pin.into_alternate(), 20.kHz(), clocks).split();
-        pwm_ch1.set_duty(0);
-        pwm_ch1.enable();
-        Self(pwm_ch1)
-    }
-
-    /// Set the LED's duty cycle as a percentage.
-    ///
-    /// Valid duty cycles range from 0% (completely off) to 100% (completely on).
-    /// Assumes that the timer max duty cycle is large enough so that increments of
-    /// 1% on the duty cycle are meaningful, and 100% is "close enough" to the max
-    /// duty value (if not exactly).
-    pub fn set_duty(&mut self, duty: u8) {
-        debug_assert!(duty <= 100);
-        let duty = if duty > 100 { 100 } else { duty };
-
-        let max_duty = self.0.get_max_duty();
-        let val = (max_duty / 100) * u16::from(duty);
-        self.0.set_duty(val);
-    }
-}
-
-impl LedBuilder for LedAnalog {
-    /// Build an analog LED.
-    #[must_use]
-    fn build(pin: PA5<Input>, tim: TIM2, clocks: &Clocks) -> Self {
-        Self::new(pin, tim, clocks)
-    }
-}
+// /// An analog LED controller (brightness from 0 - 100%).
+// #[allow(clippy::module_name_repetitions)]
+// pub struct LedAnalog(PwmChannel<TIM2, 0>);
+// 
+// impl LedAnalog {
+//     /// Initialize the analog LED.
+//     ///
+//     /// PWM frequency is set to 20 kHz. In the future if it needs to be user-defined,
+//     /// this could be done through a generic parameter on `LedAnalog`.
+//     /// Since each pin can only be moved once, effectively this is a singleton.
+//     #[must_use]
+//     pub fn new(pin: PA5<Input>, tim: TIM2, clocks: &Clocks) -> Self {
+//         let mut pwm_ch1 = tim.pwm_hz(pin.into_alternate(), 20.kHz(), clocks).split();
+//         pwm_ch1.set_duty(0);
+//         pwm_ch1.enable();
+//         Self(pwm_ch1)
+//     }
+// 
+//     /// Set the LED's duty cycle as a percentage.
+//     ///
+//     /// Valid duty cycles range from 0% (completely off) to 100% (completely on).
+//     /// Assumes that the timer max duty cycle is large enough so that increments of
+//     /// 1% on the duty cycle are meaningful, and 100% is "close enough" to the max
+//     /// duty value (if not exactly).
+//     pub fn set_duty(&mut self, duty: u8) {
+//         debug_assert!(duty <= 100);
+//         let duty = if duty > 100 { 100 } else { duty };
+// 
+//         let max_duty = self.0.get_max_duty();
+//         let val = (max_duty / 100) * u16::from(duty);
+//         self.0.set_duty(val);
+//     }
+// }
+// 
+// impl LedBuilder for LedAnalog {
+//     /// Build an analog LED.
+//     #[must_use]
+//     fn build(pin: PA5<Input>, tim: TIM2, clocks: &Clocks) -> Self {
+//         Self::new(pin, tim, clocks)
+//     }
+// }
+// 
